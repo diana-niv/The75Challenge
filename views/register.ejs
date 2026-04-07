@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.9) 0%,
+            rgba(118, 75, 162, 0.8) 50%,
+            rgba(102, 126, 234, 0.9) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3.5rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .register-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2.2rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .register-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #333 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .register-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #333;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1.2rem 1.2rem 1.2rem 3.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .form-group.textarea-group i {
+            top: 3.5rem;
+            transform: translateY(-50%);
+        }
+
+        /* Profile Picture Upload Styles */
+        .profile-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2.5rem;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            background: rgba(248, 249, 255, 0.6);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .profile-upload-container:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .profile-preview {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .default-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-controls {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .remove-btn {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+        }
+
+        .remove-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.4);
+        }
+
+        .upload-info {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .upload-info i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.4rem 2.5rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            grid-column: 1 / -1;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .form-footer p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .login-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.1) 0%, rgba(255, 71, 87, 0.05) 100%);
+            color: #ff4757;
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 71, 87, 0.2);
+            display: none;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(46, 213, 115, 0.1) 0%, rgba(46, 213, 115, 0.05) 100%);
+            color: #2ed573;
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(46, 213, 115, 0.2);
+            display: none;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+
+        /* Loading state */
+        .submit-btn.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 0.8rem;
+            height: 6px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.4s ease;
+            border-radius: 3px;
+        }
+
+        .password-strength.weak .password-strength-bar {
+            width: 33%;
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+        }
+
+        .password-strength.medium .password-strength-bar {
+            width: 66%;
+            background: linear-gradient(135deg, #ffa502 0%, #ff9500 100%);
+        }
+
+        .password-strength.strong .password-strength-bar {
+            width: 100%;
+            background: linear-gradient(135deg, #2ed573 0%, #17c0eb 100%);
+        }
+
+        /* Form validation styles */
+        .form-group input.valid {
+            border-color: #2ed573;
+            background: rgba(46, 213, 115, 0.05);
+        }
+
+        .form-group input.invalid {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.05);
+        }
+
+        .validation-icon {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .validation-icon.valid {
+            color: #2ed573;
+        }
+
+        .validation-icon.invalid {
+            color: #ff4757;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .register-container {
+                margin: 1rem;
+                padding: 2.5rem;
+            }
+
+            .register-header h1 {
+                font-size: 2rem;
+            }
+
+            .register-form {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .form-group.full-width {
+                grid-column: 1;
+            }
+
+            .register-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+
+            .profile-preview {
+                width: 100px;
+                height: 100px;
+            }
+
+            .upload-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .register-container {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .register-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="register-container">
+        <!-- Register Header -->
+        <div class="register-header">
+            <div class="register-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>Join FitChallenge</h1>
+            <p>Start your transformation journey today</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText"></span>
+        </div>
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText"></span>
+        </div>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="register-form" action="/register" method="POST" enctype="multipart/form-data">
+            <div class="form-group full-width">
+                <label for="profile_pic">
+                    <i class="fas fa-camera"></i>
+                    Profile Picture
+                </label>
+                <!-- Profile Picture Upload Area -->
+                <div class="profile-upload-container">
+                    <div class="profile-preview" id="profilePreview">
+                        <div class="default-avatar" id="defaultAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <img id="previewImage" class="profile-image" style="display: none;" alt="Profile Preview">
+                    </div>
+                    <div class="upload-controls">
+                        <input
+                                type="file"
+                                id="profile_pic"
+                                name="profile_pic"
+                                accept="image/*"
+                                style="display: none;"
+                        />
+                        <label for="profile_pic" class="upload-btn">
+                            <i class="fas fa-camera"></i>
+                            Choose Photo
+                        </label>
+                        <button type="button" class="remove-btn" id="removePhoto" style="display: none;">
+                            <i class="fas fa-trash"></i>
+                            Remove
+                        </button>
+                    </div>
+                    <div class="upload-info">
+                        <small>
+                            <i class="fas fa-info-circle"></i>
+                            JPG, PNG, or GIF. Max size: 5MB
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="name">
+                    <i class="fas fa-user"></i>
+                    First Name
+                </label>
+                <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your first name"
+                        required
+                        autocomplete="given-name"
+                />
+                <i class="fas fa-user"></i>
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="surname">
+                    <i class="fas fa-user"></i>
+                    Last Name
+                </label>
+                <input
+                        type="text"
+                        id="surname"
+                        name="surname"
+                        placeholder="Enter your last name"
+                        required
+                        autocomplete="family-name"
+                />
+                <i class="fas fa-user"></i>
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="email">
+                    <i class="fas fa-envelope"></i>
+                    Email Address
+                </label>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                        required
+                        autocomplete="email"
+                />
+                <i class="fas fa-envelope"></i>
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="password">
+                    <i class="fas fa-lock"></i>
+                    Password
+                </label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required
+                        autocomplete="new-password"
+                />
+                <i class="fas fa-lock"></i>
+                <span class="validation-icon"></span>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="password-strength-bar"></div>
+                </div>
+            </div>
+
+            <div class="form-group full-width textarea-group">
+                <label for="info">
+                    <i class="fas fa-info-circle"></i>
+                    About You (Optional)
+                </label>
+                <textarea
+                        id="info"
+                        name="info"
+                        placeholder="Tell us about your fitness goals, experience, or anything you'd like to share..."
+                        rows="3"
+                ></textarea>
+                <i class="fas fa-info-circle"></i>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-rocket"></i>
+                Create Account
+            </button>
+        </form>
+
+        <!-- Form Footer -->
+        <div class="form-footer">
+            <p>Already have an account?</p>
+            <a href="/login" class="login-link">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+            </a>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // USER REGISTRATION WITH PROFILE PICTURE PREVIEW
+    // ========================================
+    
+    // Get DOM elements for profile picture functionality
+    const profilePicInput = document.getElementById('profile_pic');
+    const previewImage = document.getElementById('previewImage');
+    const defaultAvatar = document.getElementById('defaultAvatar');
+    const removePhotoBtn = document.getElementById('removePhoto');
+    const profilePreview = document.getElementById('profilePreview');
+
+    // ========================================
+    // PROFILE PICTURE PREVIEW FUNCTIONALITY
+    // ========================================
+    
+    /**
+     * Handles profile picture file selection and preview
+     * Validates file type and size, then shows preview
+     */
+    profilePicInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type - only allow common image formats
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Please select a valid image file (JPG, PNG, or GIF)');
+                return;
+            }
+
+            // Validate file size - limit to 5MB for performance
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                showError('File size must be less than 5MB');
+                return;
+            }
+
+            // Create FileReader to preview the selected image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Display the preview image
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                defaultAvatar.style.display = 'none';
+                removePhotoBtn.style.display = 'inline-flex';
+                
+                // Add visual feedback with border effect
+                profilePreview.style.border = '4px solid #667eea';
+                profilePreview.style.boxShadow = '0 0 0 4px rgba(102, 126, 234, 0.2)';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    /**
+     * Handles profile picture removal
+     * Resets to default avatar and clears file input
+     */
+    removePhotoBtn.addEventListener('click', function() {
+        // Clear the file input
+        profilePicInput.value = '';
+        
+        // Hide preview and show default avatar
+        previewImage.style.display = 'none';
+        previewImage.src = '';
+        defaultAvatar.style.display = 'flex';
+        removePhotoBtn.style.display = 'none';
+        
+        // Reset border styling to default
+        profilePreview.style.border = '4px solid rgba(102, 126, 234, 0.3)';
+        profilePreview.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.2)';
+    });
+
+    // ========================================
+    // FORM VALIDATION SYSTEM
+    // ========================================
+    
+    /**
+     * Validates individual form fields with real-time feedback
+     * Shows validation icons and applies appropriate styling
+     * 
+     * @param {HTMLElement} field - The input field to validate
+     */
+    function validateField(field) {
+        const value = field.value.trim();
+        const validationIcon = field.parentElement.querySelector('.validation-icon');
+        let isValid = false;
+
+        // Apply different validation rules based on field type
+        switch(field.type) {
+            case 'email':
+                // Email validation with regex pattern
+                isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                break;
+            case 'password':
+                // Password must be 8+ chars with letters and numbers
+                isValid = value.length >= 8 && /(?=.*[a-zA-Z])(?=.*\d)/.test(value);
+                updatePasswordStrength(value);
+                break;
+            default:
+                // Other fields must be at least 2 characters
+                isValid = value.length >= 2;
+        }
+
+        // Handle empty required fields
+        if (field.required && value === '') {
+            field.classList.remove('valid', 'invalid');
+            validationIcon.innerHTML = '';
+            return;
+        }
+
+        // Apply validation styling and icons
+        if (isValid) {
+            field.classList.add('valid');
+            field.classList.remove('invalid');
+            validationIcon.innerHTML = '<i class="fas fa-check valid"></i>';
+        } else {
+            field.classList.add('invalid');
+            field.classList.remove('valid');
+            validationIcon.innerHTML = '<i class="fas fa-times invalid"></i>';
+        }
+    }
+
+    /**
+     * Updates password strength indicator
+     * Shows visual feedback based on password complexity
+     * 
+     * @param {string} password - The password to evaluate
+     */
+    function updatePasswordStrength(password) {
+        const strengthIndicator = document.getElementById('passwordStrength');
+        let strength = 0;
+
+        // Calculate strength based on various criteria
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++; // Lowercase letters
+        if (/[A-Z]/.test(password)) strength++; // Uppercase letters
+        if (/\d/.test(password)) strength++; // Numbers
+        if (/[^a-zA-Z\d]/.test(password)) strength++; // Special characters
+
+        // Apply strength classes for visual feedback
+        strengthIndicator.className = 'password-strength';
+        if (strength >= 2) strengthIndicator.classList.add('weak');
+        if (strength >= 3) strengthIndicator.classList.add('medium');
+        if (strength >= 4) strengthIndicator.classList.add('strong');
+    }
+
+    // ========================================
+    // MESSAGE DISPLAY SYSTEM
+    // ========================================
+    
+    /**
+     * Displays error messages with auto-hide functionality
+     * 
+     * @param {string} message - The error message to display
+     */
+    function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        errorText.textContent = message;
+        errorMessage.style.display = 'block';
+        
+        // Auto-hide error message after 5 seconds
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    /**
+     * Displays success messages with auto-hide functionality
+     * 
+     * @param {string} message - The success message to display
+     */
+    function showSuccess(message) {
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        successText.textContent = message;
+        successMessage.style.display = 'block';
+        
+        // Auto-hide success message after 5 seconds
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // ========================================
+    // REAL-TIME VALIDATION EVENT LISTENERS
+    // ========================================
+    
+    /**
+     * Sets up real-time validation for form fields
+     * Validates on blur and input events for immediate feedback
+     */
+    document.querySelectorAll('input[required], input[type="email"], input[type="password"]').forEach(input => {
+        // Validate when user leaves the field
+        input.addEventListener('blur', () => validateField(input));
+        
+        // Validate as user types (only if field has been validated before)
+        input.addEventListener('input', () => {
+            if (input.classList.contains('valid') || input.classList.contains('invalid')) {
+                validateField(input);
+            }
+        });
+    });
+
+    // ========================================
+    // FORM SUBMISSION HANDLING
+    // ========================================
+    
+    /**
+     * Handles form submission with comprehensive validation
+     * Shows loading state and prevents submission if validation fails
+     */
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        // Hide any previous messages
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+
+        // Validate all required fields before submission
+        const requiredFields = document.querySelectorAll('input[required]');
+        let allValid = true;
+
+        requiredFields.forEach(field => {
+            validateField(field);
+            if (field.classList.contains('invalid') || (!field.classList.contains('valid') && field.value.trim() === '')) {
+                allValid = false;
+            }
+        });
+
+        // Prevent submission if validation fails
+        if (!allValid) {
+            e.preventDefault();
+            showError('Please fill in all required fields correctly.');
+            return;
+        }
+
+        // Add loading state to submit button
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Creating Account...';
+        submitBtn.disabled = true;
+
+        // Form will submit normally with the profile picture included
+        // The enctype="multipart/form-data" ensures the file is uploaded
+    });
+
+    // ========================================
+    // USER EXPERIENCE ENHANCEMENTS
+    // ========================================
+    
+    /**
+     * Adds subtle animations to form inputs on focus/blur
+     * Provides visual feedback for user interaction
+     */
+    document.querySelectorAll('.form-group input, .form-group textarea').forEach(input => {
+        input.addEventListener('focus', () => {
+            input.parentElement.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', () => {
+            input.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Auto-focus first input field for immediate usability
+    document.getElementById('name').focus();
+
+    // ========================================
+    // PARALLAX BACKGROUND EFFECT
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>

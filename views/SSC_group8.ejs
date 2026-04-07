@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Details</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+<header>
+    <img id="logo" src="/logo.png" alt="">
+    <h1>Edit User</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/users" class="underline">Users</a></li>
+        <li><a href="/chat">Chat</a></li>
+        <li><a href="/add">Add</a></li>
+    </ul>
+</nav>
+
+    <form action="/users/<%= user.id %>" method="post" class="form">
+        <% Object.keys(user).forEach(function (key) { %>
+            <%= key %>: <input value="<%= user[key] %>"
+                               name="<%= key %>"
+                               type="text"
+            />
+        <% }) %>
+        <input class="button" type="submit" value="Update data"/>
+    </form>
+</body>
+</html>

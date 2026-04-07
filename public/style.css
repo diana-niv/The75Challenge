@@ -1,0 +1,272 @@
+body {
+    font-family: "Outfit", sans-serif;
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+#logo {
+    position: absolute;
+    left: 0;
+    top:0;
+    height: 110px;
+    width: 110px;
+}
+nav {
+    background-color: rgb(184, 146, 239, .5);
+    padding: 12px 32px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+nav ul li a:hover {
+    font-weight:bold;
+}
+.underline{
+    text-decoration: underline;
+}
+h1 {
+    color: #333;
+    font-family: bold, "Outfit", sans-serif;
+}
+#h1users {
+    text-align: center;
+}
+header {
+    background-color: #b892ef;
+    color: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+.card-container {
+    display: flex;  /* Enables flexbox */
+    gap: 20px; /* Adds space between cards */
+    justify-content: center; /* Centers cards horizontally */
+    flex-wrap: wrap; /* Allows wrapping if screen is too small */
+}
+
+.card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    transform: scale(1.05); /* Increases size by 10% */
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 2px 16px;
+}
+img {
+    border-radius: 5px 5px 0 0;
+    height: 400px;
+    width: 150px;
+}
+
+section {
+    margin: 20px auto;
+    width: 80%;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+.users-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+.user-box, .user-page-box{
+    background-color: #c7aaef;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    width: 200px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.user-box p, .user-page-box p{
+    margin: 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+.user-page-box{
+    margin: auto;
+}
+.button{
+    background-color: #442273; /* Soft pink background */
+    border: none;
+    border-radius: 30px; /* Rounded corners for a soft look */
+    padding: 12px 24px; /* Some padding for comfort */
+    margin-top: 10px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    color: #fff; /* White text */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    transition: all 0.3s ease-in-out;
+}
+.button:hover {
+    background-color: #c7aaef; /* Brighter pink when hovered */
+    color: black;
+    transform: translateY(-4px); /* Slight lift effect */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* More shadow on hover */
+}
+.form {
+    background-color: #d9cdec; /* light lavender pink */
+    padding: 24px;
+    border-radius: 20px;
+    width: 90%;
+    margin: 10px auto;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    font-family: 'Arial', sans-serif;
+}
+footer {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #b892ef;
+    color: white;
+}
+
+.button{
+    background-color: #442273; /* Soft pink background */
+    border: none;
+    border-radius: 30px; /* Rounded corners for a soft look */
+    padding: 12px 24px; /* Some padding for comfort */
+    margin-top: 10px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    color: #fff; /* White text */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    transition: all 0.3s ease-in-out;
+}
+.button:hover {
+    background-color: #c7aaef; /* Brighter pink when hovered */
+    color: black;
+    transform: translateY(-4px); /* Slight lift effect */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* More shadow on hover */
+}
+.round-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    width: 120px;
+    height: 120px;
+    border: 3px solid #b892ef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo img {
+    height: 44px;
+    width: 44px;
+    object-fit: contain;
+    margin-right: 0.75rem;
+}
+
+.logo span {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.btn {
+    padding: 0.85rem 2rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+}
+
+
+
+.member-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.member-status {
+    margin: 0;
+    color: #28a745;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.member-status i {
+    color: #28a745;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    color: white;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838, #1ea085);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    border: none;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #c0392b);
+    transform: translateY(-2px);
+}

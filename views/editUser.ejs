@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - <%= user.name %> <%= user.surname %> | Server Side Eye</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay - matching index.ejs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - matching index.ejs exactly */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .nav-buttons .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-buttons .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-buttons .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-buttons .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-buttons .btn-logout {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+        }
+
+        .nav-buttons .btn-logout:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .page-header p {
+            font-size: 1.4rem;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            color: white;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Profile Preview */
+        .profile-preview {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .preview-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .preview-name {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .preview-email {
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .preview-info {
+            color: #666;
+            font-style: italic;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            line-height: 1.6;
+        }
+
+        /* Profile Upload Container */
+        .profile-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2.5rem;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            background: rgba(248, 249, 255, 0.6);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .profile-upload-container:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .profile-preview-upload {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+        }
+
+        .default-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-controls {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .remove-btn {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.3);
+        }
+
+        .remove-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 71, 87, 0.4);
+        }
+
+        .upload-info {
+            text-align: center;
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .upload-info i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input.textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input[readonly] {
+            background: rgba(245, 245, 245, 0.8);
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Field Icons */
+        .field-icon {
+            color: #667eea;
+            width: 18px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .upload-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .profile-preview {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .form-section {
+            animation: fadeInUp 0.8s ease-out 0.1s;
+            animation-fill-mode: both;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .page-header {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="Server Side Eye Logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+                 <div class="nav-buttons">
+             <a href="/users" class="btn btn-secondary">
+                 <i class="fas fa-users"></i> Users
+             </a>
+             <a href="/communities" class="btn btn-secondary">
+                 <i class="fas fa-users-cog"></i> Communities
+             </a>
+             <a href="/chat" class="btn btn-secondary">
+                 <i class="fas fa-comments"></i> Chat
+             </a>
+             <% if (currentUser) { %>
+                 <a href="/users/<%= currentUser.id %>" class="btn btn-primary">
+                     <i class="fas fa-user-circle"></i> Profile
+                 </a>
+             <% } %>
+                         <a href="/logout" class="btn btn-logout">
+                 <i class="fas fa-sign-out-alt"></i> Logout
+             </a>
+        </div>
+    </nav>
+</header> 
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1><i class="fas fa-user-edit"></i> Edit Profile</h1>
+            <p>Update your personal information and preferences</p>
+            <div class="user-badge">
+                <i class="fas fa-user"></i>
+                <%= user.name %> <%= user.surname %>
+            </div>
+        </div>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Profile Preview -->
+            <div class="profile-preview">
+                <h3 class="preview-title">
+                    <i class="fas fa-eye"></i>
+                    Live Preview
+                </h3>
+                <div class="profile-avatar" id="previewAvatar">
+                    <%= user.name.charAt(0).toUpperCase() %><%= user.surname.charAt(0).toUpperCase() %>
+                </div>
+                <div class="preview-name" id="previewName">
+                    <%= user.name %> <%= user.surname %>
+                </div>
+                <div class="preview-email" id="previewEmail">
+                    <i class="fas fa-envelope"></i>
+                    <%= user.email || 'No email provided' %>
+                </div>
+                <div class="preview-info" id="previewInfo">
+                    <%= user.info || 'No additional information provided' %>
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Profile Settings
+                </h2>
+                <form action="/users/<%= user.id %>" method="post" id="editForm" enctype="multipart/form-data">
+                    <!-- Profile Picture Upload -->
+                    <div class="profile-upload-container">
+                        <div class="profile-preview-upload" id="profilePreview">
+                            <div class="default-avatar" id="defaultAvatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <img id="previewImage" class="profile-image" style="display: none;" alt="Profile Preview">
+                        </div>
+                        <div class="upload-controls">
+                            <input
+                                    type="file"
+                                    id="profile_pic"
+                                    name="profile_pic"
+                                    accept="image/*"
+                                    style="display: none;"
+                            />
+                            <label for="profile_pic" class="upload-btn">
+                                <i class="fas fa-camera"></i>
+                                Choose Photo
+                            </label>
+                            <button type="button" class="remove-btn" id="removePhoto" style="display: none;">
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                            <input type="hidden" name="remove_photo" id="remove_photo_input" value="false">
+                        </div>
+                        <div class="upload-info">
+                            <small>
+                                <i class="fas fa-info-circle"></i>
+                                JPG, PNG, or GIF. Max size: 5MB
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-user field-icon"></i>
+                                First Name
+                            </label>
+                            <input type="text"
+                                   id="name"
+                                   name="name"
+                                   class="form-input"
+                                   value="<%= user.name %>"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="surname">
+                                <i class="fas fa-user field-icon"></i>
+                                Last Name
+                            </label>
+                            <input type="text"
+                                   id="surname"
+                                   name="surname"
+                                   class="form-input"
+                                   value="<%= user.surname %>"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope field-icon"></i>
+                            Email Address
+                        </label>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               class="form-input"
+                               value="<%= user.email %>"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="info">
+                            <i class="fas fa-info-circle field-icon"></i>
+                            About Me
+                        </label>
+                        <textarea id="info"
+                                  name="info"
+                                  class="form-input textarea"
+                                  placeholder="Tell us about yourself, your fitness goals, or anything you'd like to share..."><%= user.info %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock field-icon"></i>
+                            New Password (leave blank to keep current)
+                        </label>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               class="form-input"
+                               placeholder="Enter new password or leave blank">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id">
+                            <i class="fas fa-id-badge field-icon"></i>
+                            User ID
+                        </label>
+                        <input type="text"
+                               id="id"
+                               name="id"
+                               class="form-input"
+                               value="<%= user.id %>"
+                               readonly>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Profile
+                        </button>
+                        <a href="/users/<%= user.id %>" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // PROFILE PICTURE UPLOAD AND PREVIEW SYSTEM
+    // ========================================
+    
+    // Get DOM elements for profile picture functionality
+    const profilePicInput = document.getElementById('profile_pic');
+    const previewImage = document.getElementById('previewImage');
+    const defaultAvatar = document.getElementById('defaultAvatar');
+    const removePhotoBtn = document.getElementById('removePhoto');
+    const profilePreview = document.getElementById('profilePreview');
+    const userProfilePic = '<%= user.profile_pic || "" %>'; // Get user's existing profile pic from server
+
+    /**
+     * Loads the user's existing profile picture on page load
+     * If user has a profile picture, displays it instead of default avatar
+     */
+    function loadPrevPicture() {
+        if (userProfilePic) {
+            previewImage.src = '/uploads/profiles/' + userProfilePic;
+            previewImage.style.display = 'block';
+            defaultAvatar.style.display = 'none';
+            removePhotoBtn.style.display = 'inline-flex';
+            // Add visual feedback with border effect
+            profilePreview.style.border = '4px solid #667eea';
+            profilePreview.style.boxShadow = '0 0 0 4px rgba(102, 126, 234, 0.2)';
+        }
+    }
+
+    // Initialize profile picture on page load
+    loadPrevPicture();
+
+    /**
+     * Handles file selection for profile picture upload
+     * Validates file type and size, then creates preview
+     */
+    profilePicInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type - only allow common image formats
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPG, PNG, or GIF)');
+                return;
+            }
+
+            // Validate file size - limit to 5MB to prevent server overload
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+
+            // Create FileReader to preview the image before upload
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                defaultAvatar.style.display = 'none';
+                removePhotoBtn.style.display = 'inline-flex';
+                // Add visual feedback with border effect
+                profilePreview.style.border = '4px solid #667eea';
+                profilePreview.style.boxShadow = '0 0 0 4px rgba(102, 126, 234, 0.2)';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    /**
+     * Handles profile picture removal
+     * Resets to default avatar and clears file input
+     */
+    removePhotoBtn.addEventListener('click', function() {
+        profilePicInput.value = '';
+        previewImage.style.display = 'none';
+        previewImage.src = '';
+        defaultAvatar.style.display = 'flex';
+        removePhotoBtn.style.display = 'none';
+        // Reset visual styling to default state
+        profilePreview.style.border = '4px solid rgba(102, 126, 234, 0.3)';
+        profilePreview.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.2)';
+
+        document.getElementById('remove_photo_input').value = 'true';
+    });
+
+    // ========================================
+    // LIVE PREVIEW SYSTEM
+    // ========================================
+    
+    // Get DOM elements for live preview functionality
+    const nameInput = document.getElementById('name');
+    const surnameInput = document.getElementById('surname');
+    const emailInput = document.getElementById('email');
+    const infoInput = document.getElementById('info');
+    const previewAvatar = document.getElementById('previewAvatar');
+    const previewName = document.getElementById('previewName');
+    const previewEmail = document.getElementById('previewEmail');
+    const previewInfo = document.getElementById('previewInfo');
+
+    /**
+     * Updates the live preview panel with current form values
+     * Shows real-time changes as user types
+     */
+    function updatePreview() {
+        const firstName = nameInput.value || 'First';
+        const lastName = surnameInput.value || 'Last';
+        // Update avatar initials
+        previewAvatar.textContent = firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+        // Update name display
+        previewName.textContent = firstName + ' ' + lastName;
+        // Update email with icon
+        previewEmail.innerHTML = '<i class="fas fa-envelope"></i> ' + (emailInput.value || 'No email provided');
+        // Update info text
+        previewInfo.textContent = infoInput.value || 'No additional information provided';
+    }
+
+    // Add event listeners for real-time preview updates
+    nameInput.addEventListener('input', updatePreview);
+    surnameInput.addEventListener('input', updatePreview);
+    emailInput.addEventListener('input', updatePreview);
+    infoInput.addEventListener('input', updatePreview);
+
+    // ========================================
+    // FORM SUBMISSION HANDLING
+    // ========================================
+    
+    /**
+     * Handles form submission with loading animation
+     * Shows spinner and disables button to prevent double submission
+     */
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        const submitBtn = document.querySelector('.btn-primary');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Profile...';
+        submitBtn.disabled = true;
+    });
+
+    // ========================================
+    // USER EXPERIENCE ENHANCEMENTS
+    // ========================================
+    
+    // Auto-focus first input field for better UX
+    nameInput.focus();
+
+    // ========================================
+    // CHARACTER COUNTER FOR INFO FIELD
+    // ========================================
+    
+    const maxLength = 500; // Maximum characters allowed in info field
+    
+    /**
+     * Manages character counter for the info field
+     * Shows remaining characters and provides visual feedback
+     */
+    infoInput.addEventListener('input', function() {
+        const remaining = maxLength - this.value.length;
+        
+        // Create character counter element if it doesn't exist
+        if (!document.querySelector('.char-counter')) {
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.style.cssText = 'text-align: right; font-size: 1rem; color: #666; margin-top: 0.8rem; font-weight: 500;';
+            this.parentNode.appendChild(counter);
+        }
+        
+        // Update counter text
+        document.querySelector('.char-counter').textContent = `${remaining} characters remaining`;
+        
+        // Provide visual feedback based on character count
+        if (remaining < 0) {
+            // Over limit - show red warning
+            this.style.borderColor = '#ff6b6b';
+            document.querySelector('.char-counter').style.color = '#ff6b6b';
+        } else if (this.value.length > 0) {
+            // Has content - show green success
+            this.style.borderColor = '#4CAF50';
+            document.querySelector('.char-counter').style.color = '#4CAF50';
+        } else {
+            // Empty - show default styling
+            this.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+            document.querySelector('.char-counter').style.color = '#666';
+        }
+    });
+
+    // Initialize character counter on page load
+    infoInput.dispatchEvent(new Event('input'));
+
+    // ========================================
+    // PASSWORD STRENGTH INDICATOR
+    // ========================================
+    
+    const passwordInput = document.getElementById('password');
+    
+    /**
+     * Provides real-time password strength feedback
+     * Shows strength level and visual indicators
+     */
+    passwordInput.addEventListener('input', function() {
+        // Create strength indicator element if it doesn't exist
+        if (!document.querySelector('.password-strength')) {
+            const strength = document.createElement('div');
+            strength.className = 'password-strength';
+            strength.style.cssText = 'margin-top: 0.8rem; font-size: 1rem; font-weight: 500;';
+            this.parentNode.appendChild(strength);
+        }
+        
+        const strengthIndicator = document.querySelector('.password-strength');
+        const password = this.value;
+        
+        // Evaluate password strength and provide feedback
+        if (password.length === 0) {
+            // Empty password - hide indicator
+            strengthIndicator.textContent = '';
+            this.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+        } else if (password.length < 6) {
+            // Too short - show red warning
+            strengthIndicator.textContent = 'Password too short';
+            strengthIndicator.style.color = '#ff6b6b';
+            this.style.borderColor = '#ff6b6b';
+        } else if (password.length < 8) {
+            // Weak password - show orange warning
+            strengthIndicator.textContent = 'Weak password';
+            strengthIndicator.style.color = '#FFA500';
+            this.style.borderColor = '#FFA500';
+        } else {
+            // Strong password - show green success
+            strengthIndicator.textContent = 'Strong password';
+            strengthIndicator.style.color = '#4CAF50';
+            this.style.borderColor = '#4CAF50';
+        }
+    });
+
+    // ========================================
+    // VISUAL EFFECTS
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half the scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>

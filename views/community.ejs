@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= community.name %> - Community | FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay - matching index.ejs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - matching index.ejs exactly */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+         .btn-logout {
+             background: transparent;
+             color: #667eea;
+             border: none;
+             box-shadow: none;
+             font-weight: 500;
+         }
+
+         .btn-logout:hover {
+             background: rgba(102, 126, 234, 0.1);
+             color: #5a67d8;
+             transform: translateY(-1px);
+             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+         }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+        }
+
+        /* Community Header */
+        .community-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .community-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .community-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .community-name {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+        }
+
+        .community-description {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Community Content */
+        .community-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        /* Glass morphism cards */
+        .checklist-column,
+        .chat-column,
+        .members-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .checklist-column::before,
+        .chat-column::before,
+        .members-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .checklist-title,
+        .chat-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .challenge-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .challenge-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-item:hover {
+            border-color: #4CAF50;
+            transform: translateX(5px);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .challenge-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            accent-color: #4CAF50;
+            cursor: pointer;
+        }
+
+        .challenge-item label {
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .challenge-item.completed {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4CAF50;
+        }
+
+        .save-progress-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .save-progress-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Chat Column */
+        .chat-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #messages {
+            flex: 1;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #messages p {
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            color: #333;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        #text {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        #text:focus {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Members Section */
+        .members-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .members-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .member-card {
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            width: 140px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .member-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover .member-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .member-avatar img.profile-picture {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            text-align: center;
+            line-height: 1.3;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .empty-members {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-members i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .empty-members p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Non-Member Content */
+        .non-member-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 4rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            margin-top: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .non-member-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .join-prompt {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .join-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 2rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .join-prompt h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .join-prompt p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .feature-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-item {
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-item i {
+            font-size: 2rem;
+            color: #667eea;
+            width: 50px;
+            text-align: center;
+        }
+
+        .feature-info h4 {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .feature-info p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .community-content {
+                grid-template-columns: 1fr;
+            }
+
+            .community-name {
+                font-size: 2rem;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chat-input-container {
+                flex-direction: column;
+            }
+
+            .non-member-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .join-prompt h3 {
+                font-size: 1.5rem;
+            }
+
+            .feature-preview {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .community-header {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .checklist-column {
+            animation: fadeInUp 0.6s ease-out 0.1s;
+            animation-fill-mode: both;
+        }
+
+        .chat-column {
+            animation: fadeInUp 0.6s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+
+        /* Scrollbar Styling */
+        #messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #messages::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 3px;
+        }
+
+        #messages::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 3px;
+        }
+
+        #messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="Server Side Eye Logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/users" class="btn btn-secondary">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="/communities" class="btn btn-primary">
+                <i class="fas fa-users-cog"></i> Communities
+            </a>
+            <a href="/chat" class="btn btn-secondary">
+                <i class="fas fa-comments"></i> Chat
+            </a>
+            <% if (currentUser) { %>
+                <a href="/users/<%= currentUser.id %>" class="btn btn-secondary">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+            <% } %>
+                         <a href="/logout" class="btn btn-logout">
+                 <i class="fas fa-sign-out-alt"></i> Logout
+             </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Community Header -->
+        <div class="community-header">
+            <div class="community-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h1 class="community-name"><%= community.name %></h1>
+            <p class="community-description"><%= community.description %></p>
+            <% if (!isMember) { %>
+                <form action="/communities/<%= community.id %>/join" method="POST">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Join Community
+                    </button>
+                </form>
+            <% } else { %>
+                <div class="member-actions">
+                    <p class="member-status" style="color: #4CAF50; margin-bottom: 1rem; font-weight: 600;">
+                        <i class="fas fa-check-circle"></i> You are a member of this community
+                    </p>
+                    <form action="/communities/<%= community.id %>/leave" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to leave this community?')">
+                            <i class="fas fa-sign-out-alt"></i> Leave Community
+                        </button>
+                    </form>
+                </div>
+            <% } %>
+
+            <% if (userId == 14) { %>
+                <div class="admin-controls">
+                    <a href="/communities/<%= community.id %>/edit" class="btn btn-primary">
+                        <i class="fas fa-edit"></i>
+                        Edit Community
+                    </a>
+                    <form action="/communities/<%= community.id %>?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this community?')">
+                            <i class="fas fa-trash"></i>
+                            Delete Community
+                        </button>
+                    </form>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Community Members Section -->
+        <div class="members-section">
+            <h3 class="section-title">
+                <i class="fas fa-users"></i>
+                Members (<%= members ? members.length : 0 %>)
+            </h3>
+
+            <% if (members && members.length > 0) { %>
+                <div class="members-grid">
+                    <% members.forEach(member => { %>
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <% if (member.profile_pic) { %>
+                                    <img src="/uploads/profiles/<%= member.profile_pic %>" alt="Profile Picture" class="profile-picture">
+                                <% } else { %>
+                                    <%= member.name.charAt(0).toUpperCase() %><%= member.surname.charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="member-name"><%= member.name %> <%= member.surname %></div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-members">
+                    <i class="fas fa-users"></i>
+                    <p>No members yet</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Community Content -->
+        <% if (isMember) { %>
+            <div class="community-content">
+                <!-- Checklist Column -->
+                <div class="checklist-column">
+                    <h3 class="checklist-title">
+                        <i class="fas fa-tasks"></i>
+                        Today's Challenge Checklist
+                    </h3>
+                    <form method="POST" action="/communities/<%= community.id %>/progress">
+                        <ul class="challenge-list">
+                            <% challenges.forEach(function(challenge) { %>
+                                <li class="challenge-item <%= progress[challenge.id] ? 'completed' : '' %>">
+                                    <input type="checkbox"
+                                           name="challenge_<%= challenge.id %>"
+                                           value="1"
+                                           id="challenge_<%= challenge.id %>"
+                                            <%= progress[challenge.id] ? 'checked' : '' %> />
+                                    <label for="challenge_<%= challenge.id %>">
+                                        <%= challenge.name %>
+                                    </label>
+                                </li>
+                            <% }) %>
+                        </ul>
+                        <button type="submit" class="save-progress-btn">
+                            <i class="fas fa-save"></i>
+                            Save Progress
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Chat Column -->
+                <div class="chat-column">
+                    <h3 class="chat-title">
+                        <i class="fas fa-comments"></i>
+                        Community Chat
+                    </h3>
+                    <div id="messages">
+                        <% if (messages) { %>
+                            <% messages.forEach(function(msg) { %>
+                                <p><strong><%= msg.username %>:</strong> <%= msg.message %></p>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                    <div class="chat-input-container">
+                        <input id="text" type="text" placeholder="Type your message..." />
+                        <button class="send-btn" onclick="sendMyMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <!-- Non-Member Content -->
+            <div class="non-member-content">
+                <div class="join-prompt">
+                    <div class="join-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Join to Access Community Features</h3>
+                    <p>Become a member to participate in challenges, track your progress, and chat with other members!</p>
+
+                    <div class="feature-preview">
+                        <div class="feature-item">
+                            <i class="fas fa-tasks"></i>
+                            <div class="feature-info">
+                                <h4>Daily Challenges</h4>
+                                <p>Complete daily tasks and track your progress</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-comments"></i>
+                            <div class="feature-info">
+                                <h4>Community Chat</h4>
+                                <p>Connect with other members in real-time</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line"></i>
+                            <div class="feature-info">
+                                <h4>Progress Tracking</h4>
+                                <p>Monitor your fitness journey and achievements</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="/communities/<%= community.id %>/join" method="POST" style="margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                            <i class="fas fa-user-plus"></i>
+                            Join Community Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // COMMUNITY CHALLENGE TRACKING AND CHAT SYSTEM
+    // ========================================
+    
+    // Global state variables for community functionality
+    let username = "<%= username %>"; // Current user's display name
+    let userId = "<%= userId %>"; // Current user's ID for authentication
+    let room = "<%= chatRoom %>"; // Community-specific chat room
+    let userIsMember = "<%= isMember ? 'true' : 'false' %>"; // User's membership status
+    let socket; // WebSocket connection for real-time chat
+
+    // ========================================
+    // INITIALIZATION AND SETUP
+    // ========================================
+    
+    /**
+     * Initializes community functionality when DOM is fully loaded
+     * Only activates features for community members
+     */
+    window.addEventListener('DOMContentLoaded', (event) => {
+        // Only initialize chat and checkboxes for community members
+        if (userIsMember) {
+            startSocket(); // Initialize WebSocket connection for chat
+            
+            // Add enter key support for chat input
+            const chatInput = document.getElementById('text');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMyMessage();
+                    }
+                });
+            }
+
+            // Add checkbox change animations for challenge tracking
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const challengeItem = this.closest('.challenge-item');
+                    if (this.checked) {
+                        // Mark challenge as completed with visual feedback
+                        challengeItem.classList.add('completed');
+                    } else {
+                        // Mark challenge as incomplete
+                        challengeItem.classList.remove('completed');
+                    }
+                });
+            });
+        }
+    });
+
+    // ========================================
+    // WEBSOCKET CHAT FUNCTIONALITY
+    // ========================================
+    
+    /**
+     * Establishes WebSocket connection for community chat
+     * Joins the community-specific chat room
+     */
+    function startSocket() {
+        // Initialize Socket.IO connection with user authentication
+        socket = io({
+            auth: {
+                userId: userId // Send user ID for server-side authentication
+            }
+        });
+
+        // Join the community-specific chat room
+        socket.emit('joinRoom', { username, room });
+
+        /**
+         * Handles incoming chat messages from other community members
+         * Displays messages in the community chat interface
+         */
+        socket.on('message', function(data) {
+            addTextMessage(data);
+        });
+    }
+
+    /**
+     * Sends user message to community chat
+     * Validates input and clears message field after sending
+     */
+    function sendMyMessage() {
+        let text = document.getElementById("text").value.trim();
+        if (text && socket && username && room) {
+            socket.emit('chatMessage', text); // Send message to community chat
+            document.getElementById("text").value = ''; // Clear input field
+        }
+    }
+
+    /**
+     * Displays chat messages in the community chat interface
+     * Handles both user messages and system messages
+     * 
+     * @param {Object|string} data - Message data from server
+     */
+    function addTextMessage(data) {
+        const tag = document.createElement("p");
+        
+        if (data.user) {
+            // User message format with username and message
+            tag.innerHTML = `<strong>${data.user}:</strong> ${data.msg}`;
+        } else {
+            // System message or simple text message
+            tag.textContent = data;
+        }
+        
+        // Add message to chat container and scroll to bottom
+        const messagesContainer = document.getElementById("messages");
+        messagesContainer.appendChild(tag);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // ========================================
+    // SCROLL ANIMATIONS
+    // ========================================
+    
+    // Configure intersection observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger 50px before element enters viewport
+    };
+
+    // Create observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Animate element into view
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Apply scroll animations to challenge items
+    document.querySelectorAll('.challenge-item').forEach((el, index) => {
+        // Set initial hidden state
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        // Add staggered animation delay based on index
+        el.style.transition = `opacity 0.6s ease ${index * 0.05}s, transform 0.6s ease ${index * 0.05}s`;
+        observer.observe(el);
+    });
+
+    // ========================================
+    // VISUAL EFFECTS
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half the scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>

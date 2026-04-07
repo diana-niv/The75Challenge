@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communities - FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay - matching index.ejs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - matching index.ejs exactly */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .nav-buttons .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-buttons .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-buttons .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-buttons .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-buttons .btn-logout {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+        }
+
+        .nav-buttons .btn-logout:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .page-header p {
+            font-size: 1.4rem;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            line-height: 1.6;
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Communities Section */
+        .communities-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .communities-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .add-community-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-community-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+
+        .communities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .community-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .community-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .community-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .community-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .community-name {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .community-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .community-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .community-join-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .community-join-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #667eea;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .communities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .community-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .community-card:nth-child(2) { animation-delay: 0.1s; }
+        .community-card:nth-child(3) { animation-delay: 0.2s; }
+        .community-card:nth-child(4) { animation-delay: 0.3s; }
+        .community-card:nth-child(5) { animation-delay: 0.4s; }
+        .community-card:nth-child(6) { animation-delay: 0.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .page-header {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="Server Side Eye Logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/users" class="btn btn-secondary">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="/communities" class="btn btn-primary">
+                <i class="fas fa-users-cog"></i> Communities
+            </a>
+            <a href="/chat" class="btn btn-secondary">
+                <i class="fas fa-comments"></i> Chat
+            </a>
+            <% if (currentUser) { %>
+                <a href="/users/<%= currentUser.id %>" class="btn btn-secondary">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+            <% } %>
+            <a href="/logout" class="btn btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1><i class="fas fa-users-cog"></i> Challenge Communities</h1>
+            <p>Join communities, participate in challenges, and achieve your fitness goals together</p>
+        </div>
+
+        <!-- Communities Section -->
+        <div class="communities-section fade-in-up">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-fire"></i>
+                    Active Communities (<%= communities.length %>)
+                </h2>
+                <a href="/communities/add" class="add-community-btn">
+                    <i class="fas fa-plus"></i>
+                    Create Community
+                </a>
+            </div>
+
+            <% if (communities.length > 0) { %>
+                <div class="communities-grid">
+                    <% communities.forEach(community => { %>
+                        <div class="community-card" onclick="location.href='/communities/<%= community.id %>'">
+                            <div class="community-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="community-name"><%= community.name %></div>
+                            <div class="community-description">
+                                <%= community.description || 'Join this amazing community and start your fitness journey!' %>
+                            </div>
+                            <div class="community-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>Active Members</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-fire"></i>
+                                    <span>Daily Challenges</span>
+                                </div>
+                            </div>
+                            <button class="community-join-btn">
+                                <i class="fas fa-arrow-right"></i>
+                                Join Community
+                            </button>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-users-cog"></i>
+                    <h3>No Communities Yet</h3>
+                    <p>Be the first to create a challenge community!</p>
+                    <a href="/communities/add" class="add-community-btn">
+                        <i class="fas fa-rocket"></i>
+                        Create First Community
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // COMMUNITIES PAGE ANIMATIONS AND EFFECTS
+    // ========================================
+    
+    // ========================================
+    // SCROLL-BASED ANIMATIONS
+    // ========================================
+    
+    /**
+     * Configuration for Intersection Observer
+     * Triggers animations when elements come into view
+     */
+    const observerOptions = {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger 50px before element enters viewport
+    };
+
+    /**
+     * Intersection Observer for scroll-triggered animations
+     * Animates community cards as they come into view
+     */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Animate element into view with fade and slide effect
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    /**
+     * Initialize community cards with staggered animations
+     * Sets up each card with initial hidden state and delayed animation
+     */
+    document.querySelectorAll('.community-card').forEach((el, index) => {
+        // Set initial hidden state
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        
+        // Create staggered transition with increasing delay
+        el.style.transition = `opacity 0.8s ease ${index * 0.05}s, transform 0.8s ease ${index * 0.05}s`;
+        
+        // Start observing this element for scroll animations
+        observer.observe(el);
+    });
+
+    // ========================================
+    // PARALLAX BACKGROUND EFFECT
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half the scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>

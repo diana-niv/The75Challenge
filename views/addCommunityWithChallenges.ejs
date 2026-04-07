@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Community with Challenges | FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/background.jpg') center/cover no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - matching index.ejs exactly */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .nav-buttons .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-buttons .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-buttons .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-buttons .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-buttons .btn-logout {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+        }
+
+        .nav-buttons .btn-logout:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: white;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+            rgba(255,255,255,0.5) 0%,
+            rgba(255,255,255,0.8) 50%,
+            rgba(255,255,255,0.5) 100%);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .form-input.textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Challenges Section */
+        .challenges-container {
+            margin-top: 2rem;
+        }
+
+        .challenge-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .challenge-item:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-number {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .remove-challenge-btn {
+            background: rgba(255, 107, 107, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .remove-challenge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .add-challenge-btn {
+            background: rgba(76, 175, 80, 0.8);
+            color: white;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+            margin-top: 1rem;
+        }
+
+        .add-challenge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                top: 10px;
+            }
+
+            header::before {
+                width: calc(100% - 20px);
+                border-radius: 15px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .challenge-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .challenge-item {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .challenge-item:nth-child(2) { animation-delay: 0.1s; }
+        .challenge-item:nth-child(3) { animation-delay: 0.2s; }
+        .challenge-item:nth-child(4) { animation-delay: 0.3s; }
+        .challenge-item:nth-child(5) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="FitChallenge Logo">
+            <span>
+                    <i class="fas fa-dumbbell"></i>
+                    75Challenge
+                </span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/users" class="btn btn-secondary">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="/communities" class="btn btn-primary">
+                <i class="fas fa-users-cog"></i> Communities
+            </a>
+            <a href="/chat" class="btn btn-secondary">
+                <i class="fas fa-comments"></i> Chat
+            </a>
+            <% if (currentUser) { %>
+                <a href="/users/<%= currentUser.id %>" class="btn btn-secondary">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+            <% } %>
+            <a href="/logout" class="btn btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1><i class="fas fa-plus-circle"></i> Create New Community</h1>
+            <p>Build a fitness community with custom challenges and goals</p>
+        </div>
+
+        <form action="/communities/add" method="POST" id="createForm">
+            <!-- Community Information -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Community Information
+                </h2>
+                <div class="form-group">
+                    <label for="name">
+                        <i class="fas fa-tag"></i>
+                        Community Name
+                    </label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           class="form-input"
+                           placeholder="Enter community name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">
+                        <i class="fas fa-align-left"></i>
+                        Description
+                    </label>
+                    <textarea id="description"
+                              name="description"
+                              class="form-input textarea"
+                              placeholder="Describe your community and its goals..."
+                              required></textarea>
+                </div>
+            </div>
+
+            <!-- Challenges Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    Daily Challenges
+                </h2>
+                <p style="color: rgba(255,255,255,0.9); margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                    Create daily challenges for your community members to complete
+                </p>
+
+                <div class="challenges-container" id="challengesContainer">
+                    <!-- Initial challenge -->
+                    <div class="challenge-item">
+                        <div class="challenge-header">
+                            <span class="challenge-number">Challenge 1</span>
+                            <button type="button" class="remove-challenge-btn" onclick="removeChallenge(this)" style="display: none;">
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-bullseye"></i>
+                                Challenge Name
+                            </label>
+                            <input type="text"
+                                   name="challenges[]"
+                                   class="form-input"
+                                   placeholder="e.g., Drink 8 glasses of water"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="add-challenge-btn" onclick="addChallenge()">
+                    <i class="fas fa-plus"></i>
+                    Add Another Challenge
+                </button>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Create Community
+                </button>
+                <a href="/communities" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // COMMUNITY CREATION WITH DYNAMIC CHALLENGES
+    // ========================================
+    
+    // Global state for challenge management
+    let challengeCount = 1; // Track number of challenges in the form
+
+    // ========================================
+    // DYNAMIC CHALLENGE MANAGEMENT
+    // ========================================
+    
+    /**
+     * Adds a new challenge field to the form
+     * Creates animated challenge input with remove functionality
+     */
+    function addChallenge() {
+        challengeCount++;
+        const container = document.getElementById('challengesContainer');
+
+        // Create new challenge div with initial hidden state
+        const challengeDiv = document.createElement('div');
+        challengeDiv.className = 'challenge-item';
+        challengeDiv.style.opacity = '0';
+        challengeDiv.style.transform = 'translateY(20px)';
+
+        // Generate HTML for new challenge field
+        challengeDiv.innerHTML = `
+            <div class="challenge-header">
+                <span class="challenge-number">Challenge ${challengeCount}</span>
+                <button type="button" class="remove-challenge-btn" onclick="removeChallenge(this)">
+                    <i class="fas fa-trash"></i>
+                    Remove
+                </button>
+            </div>
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-bullseye"></i>
+                    Challenge Name
+                </label>
+                <input type="text"
+                       name="challenges[]"
+                       class="form-input"
+                       placeholder="e.g., Exercise for 30 minutes"
+                       required>
+            </div>
+        `;
+
+        // Add to container
+        container.appendChild(challengeDiv);
+
+        // Animate the new challenge into view
+        setTimeout(() => {
+            challengeDiv.style.transition = 'all 0.3s ease';
+            challengeDiv.style.opacity = '1';
+            challengeDiv.style.transform = 'translateY(0)';
+        }, 10);
+
+        // Focus on the new input for immediate typing
+        const newInput = challengeDiv.querySelector('input');
+        newInput.focus();
+
+        // Update remove button visibility
+        updateRemoveButtons();
+    }
+
+    /**
+     * Removes a challenge field from the form
+     * Animates removal and updates challenge numbering
+     * 
+     * @param {HTMLElement} button - The remove button that was clicked
+     */
+    function removeChallenge(button) {
+        const challengeItem = button.closest('.challenge-item');
+
+        // Animate the challenge out of view
+        challengeItem.style.transition = 'all 0.3s ease';
+        challengeItem.style.opacity = '0';
+        challengeItem.style.transform = 'translateY(-20px)';
+
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+            challengeItem.remove();
+            challengeCount--;
+            updateChallengeNumbers(); // Renumber remaining challenges
+            updateRemoveButtons(); // Update remove button visibility
+        }, 300);
+    }
+
+    /**
+     * Updates challenge numbering after removal
+     * Ensures challenges are numbered sequentially (1, 2, 3, etc.)
+     */
+    function updateChallengeNumbers() {
+        const challenges = document.querySelectorAll('.challenge-item');
+        challenges.forEach((challenge, index) => {
+            const numberSpan = challenge.querySelector('.challenge-number');
+            numberSpan.textContent = `Challenge ${index + 1}`;
+        });
+    }
+
+    /**
+     * Controls visibility of remove buttons
+     * Hides remove button when only one challenge remains
+     */
+    function updateRemoveButtons() {
+        const challenges = document.querySelectorAll('.challenge-item');
+        const removeButtons = document.querySelectorAll('.remove-challenge-btn');
+
+        removeButtons.forEach(button => {
+            // Show remove buttons only if more than one challenge exists
+            button.style.display = challenges.length > 1 ? 'flex' : 'none';
+        });
+    }
+
+    // ========================================
+    // FORM SUBMISSION HANDLING
+    // ========================================
+    
+    /**
+     * Handles form submission with loading animation
+     * Shows spinner and disables button to prevent double submission
+     */
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+        const submitBtn = document.querySelector('.btn-primary');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Community...';
+        submitBtn.disabled = true;
+    });
+
+    // ========================================
+    // USER EXPERIENCE ENHANCEMENTS
+    // ========================================
+    
+    // Auto-focus first input field for immediate usability
+    document.getElementById('name').focus();
+
+    // ========================================
+    // CHARACTER COUNTER FOR DESCRIPTION
+    // ========================================
+    
+    const descriptionInput = document.getElementById('description');
+    const maxLength = 500; // Maximum characters allowed in description
+
+    /**
+     * Manages character counter for the description field
+     * Shows remaining characters and provides visual feedback
+     */
+    descriptionInput.addEventListener('input', function() {
+        const remaining = maxLength - this.value.length;
+        
+        // Create character counter element if it doesn't exist
+        if (!document.querySelector('.char-counter')) {
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.style.cssText = 'text-align: right; font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 0.5rem;';
+            this.parentNode.appendChild(counter);
+        }
+        
+        // Update counter text
+        document.querySelector('.char-counter').textContent = `${remaining} characters remaining`;
+        
+        // Provide visual feedback based on character count
+        if (remaining < 0) {
+            // Over limit - show red warning
+            this.style.borderColor = 'rgba(255, 107, 107, 0.8)';
+            document.querySelector('.char-counter').style.color = 'rgba(255, 107, 107, 0.8)';
+        } else if (this.value.length > 0) {
+            // Has content - show green success
+            this.style.borderColor = 'rgba(76, 175, 80, 0.8)';
+            document.querySelector('.char-counter').style.color = 'rgba(76, 175, 80, 0.8)';
+        } else {
+            // Empty - show default styling
+            this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            document.querySelector('.char-counter').style.color = 'rgba(255,255,255,0.8)';
+        }
+    });
+
+    // Initialize character counter on page load
+    descriptionInput.dispatchEvent(new Event('input'));
+
+    // ========================================
+    // KEYBOARD SHORTCUTS
+    // ========================================
+    
+    /**
+     * Adds keyboard shortcuts for better user experience
+     * Ctrl/Cmd + Enter: Add new challenge
+     */
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter to quickly add a new challenge
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            addChallenge();
+        }
+    });
+
+    // ========================================
+    // FORM VALIDATION
+    // ========================================
+    
+    /**
+     * Validates form before submission
+     * Ensures all challenge fields are filled
+     */
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+        const challenges = document.querySelectorAll('input[name="challenges[]"]');
+        let hasEmptyChallenge = false;
+
+        // Check each challenge input for empty values
+        challenges.forEach(input => {
+            if (!input.value.trim()) {
+                hasEmptyChallenge = true;
+                input.style.borderColor = 'rgba(255, 107, 107, 0.8)'; // Show error styling
+                input.focus(); // Focus on first empty field
+            }
+        });
+
+        // Prevent submission if any challenge is empty
+        if (hasEmptyChallenge) {
+            e.preventDefault();
+            alert('Please fill in all challenge names before creating the community.');
+            return false;
+        }
+    });
+
+    /**
+     * Removes error styling when user starts typing
+     * Provides immediate visual feedback for validation
+     */
+    document.addEventListener('input', function(e) {
+        if (e.target.matches('input[name="challenges[]"]') && e.target.value.trim()) {
+            e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'; // Reset to default styling
+        }
+    });
+</script>
+</body>
+</html>

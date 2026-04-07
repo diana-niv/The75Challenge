@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Directory | FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay - matching index.ejs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - matching index.ejs exactly */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .nav-buttons .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-buttons .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-buttons .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-buttons .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-buttons .btn-logout {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+        }
+
+        .nav-buttons .btn-logout:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .page-header p {
+            font-size: 1.4rem;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Search and Filter Section */
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 1.2rem 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 25px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .filter-select {
+            padding: 1.2rem 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            font-size: 1rem;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        /* Users Section */
+        .users-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .users-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 800;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.5rem;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-btn {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 20px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Users Grid */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .user-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar img.profile-picture {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .user-email {
+            color: #666;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .user-id {
+            color: #667eea;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* List View */
+        .users-list {
+            display: none;
+        }
+
+        .users-list.active {
+            display: block;
+        }
+
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-list-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .user-list-item:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateX(8px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-list-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-right: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-list-avatar img.profile-picture {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-list-info {
+            flex: 1;
+        }
+
+        .user-list-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-list-email {
+            color: #666;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .user-list-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #667eea;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .add-user-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-user-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: flex-start;
+            }
+
+            .user-list-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .user-list-avatar {
+                margin-right: 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .user-card,
+        .user-list-item {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .user-card:nth-child(2),
+        .user-list-item:nth-child(2) { animation-delay: 0.1s; }
+        .user-card:nth-child(3),
+        .user-list-item:nth-child(3) { animation-delay: 0.2s; }
+        .user-card:nth-child(4),
+        .user-list-item:nth-child(4) { animation-delay: 0.3s; }
+        .user-card:nth-child(5),
+        .user-list-item:nth-child(5) { animation-delay: 0.4s; }
+        .user-card:nth-child(6),
+        .user-list-item:nth-child(6) { animation-delay: 0.5s; }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .page-header {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="Server Side Eye Logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/users" class="btn btn-primary">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="/communities" class="btn btn-secondary">
+                <i class="fas fa-users-cog"></i> Communities
+            </a>
+            <a href="/chat" class="btn btn-secondary">
+                <i class="fas fa-comments"></i> Chat
+            </a>
+            <% if (currentUser) { %>
+                <a href="/users/<%= currentUser.id %>" class="btn btn-secondary">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+            <% } %>
+            <a href="/logout" class="btn btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1><i class="fas fa-users"></i> Users Directory</h1>
+            <p>Connect with fellow fitness enthusiasts and track community progress</p>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-section fade-in-up">
+            <div class="search-controls">
+                <input type="text"
+                       class="search-input"
+                       id="searchInput"
+                       placeholder="🔍 Search users by name, email, or ID...">
+                <select class="filter-select" id="sortFilter">
+                    <option value="name">Sort by Name</option>
+                    <option value="id">Sort by ID</option>
+                    <option value="email">Sort by Email</option>
+                    <option value="recent">Recently Added</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section fade-in-up">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="stat-number" id="totalUsers"><%= users.length %></span>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <span class="stat-number" id="activeUsers"><%= loggedInCount || 0 %></span>
+                <div class="stat-label">Logged In</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <span class="stat-number">+<%= Math.floor(Math.random() * 10) + 1 %></span>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <span class="stat-number"><%= Math.floor(users.length * 0.3) %></span>
+                <div class="stat-label">Achievers</div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="users-section fade-in-up">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-address-book"></i>
+                    Community Members (<span id="displayedCount"><%= users.length %></span>)
+                </h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="gridViewBtn">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" id="listViewBtn">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <% if (users.length > 0) { %>
+                <!-- Grid View -->
+                <div class="users-grid" id="usersGrid">
+                    <% users.forEach(function(user, index) { %>
+                        <div class="user-card" data-user-name="<%= user.name %> <%= user.surname %>"
+                             data-user-email="<%= user.email %>"
+                             data-user-id="<%= user.id %>"
+                             style="animation-delay: <%= index * 0.1 %>s">
+                            <div class="user-avatar">
+                                <% if (user.profile_pic) { %>
+                                    <img src="/uploads/profiles/<%= user.profile_pic %>" alt="Profile Picture" class="profile-picture">
+                                <% } else { %>
+                                    <%= user.name.charAt(0).toUpperCase() %><%= user.surname.charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="user-name"><%= user.name %> <%= user.surname %></div>
+                            <div class="user-email">
+                                <i class="fas fa-envelope"></i>
+                                <%= user.email || 'No email provided' %>
+                            </div>
+                            <div class="user-id">ID: <%= user.id %></div>
+                            <div class="user-actions">
+                                <% if (typeof currentUser !== 'undefined' && currentUser.id === 14) { %>
+                                    <a href="/users/<%= user.id %>/edit" class="btn btn-secondary">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    <form action="/users/<%= user.id %>?_method=DELETE" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this user?')">
+                                            <i class="fas fa-trash"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- List View -->
+                <div class="users-list" id="usersList">
+                    <% users.forEach(function(user, index) { %>
+                        <div class="user-list-item" data-user-name="<%= user.name %> <%= user.surname %>"
+                             data-user-email="<%= user.email %>"
+                             data-user-id="<%= user.id %>"
+                             style="animation-delay: <%= index * 0.05 %>s">
+                            <div class="user-list-avatar">
+                                <% if (user.profile_pic) { %>
+                                    <img src="/uploads/profiles/<%= user.profile_pic %>" alt="Profile Picture" class="profile-picture">
+                                <% } else { %>
+                                    <%= user.name.charAt(0).toUpperCase() %><%= user.surname.charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="user-list-info">
+                                <div class="user-list-name"><%= user.name %> <%= user.surname %></div>
+                                <div class="user-list-email">
+                                    <i class="fas fa-envelope"></i>
+                                    <%= user.email || 'No email provided' %>
+                                    <span style="margin-left: 1rem; color: #667eea;">ID: <%= user.id %></span>
+                                </div>
+                            </div>
+                            <div class="user-list-actions">
+                                <% if (typeof currentUser !== 'undefined' && currentUser.id === 14) { %>
+                                    <a href="/users/<%= user.id %>/edit" class="btn btn-secondary">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    <form action="/users/<%= user.id %>?_method=DELETE" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this user?')">
+                                            <i class="fas fa-trash"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>No Users Yet</h3>
+                    <p>Be the first to join the community!</p>
+                    <a href="/users/add" class="add-user-btn">
+                        <i class="fas fa-rocket"></i>
+                        Add First User
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // USERS DIRECTORY INTERACTIVE FUNCTIONALITY
+    // ========================================
+    
+    // Get DOM elements for search and filtering functionality
+    const searchInput = document.getElementById('searchInput');
+    const sortFilter = document.getElementById('sortFilter');
+    const usersGrid = document.getElementById('usersGrid');
+    const usersList = document.getElementById('usersList');
+    const displayedCount = document.getElementById('displayedCount');
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const listViewBtn = document.getElementById('listViewBtn');
+    
+    // State management
+    let currentView = 'grid'; // Track current view mode (grid or list)
+    let allUsers = []; // Store all users data for advanced operations
+
+    // ========================================
+    // DATA INITIALIZATION
+    // ========================================
+    
+    // Initialize users array with data from server
+    // This creates a JavaScript array of user objects for client-side operations
+    <% if (users.length > 0) { %>
+    allUsers = [
+        <% users.forEach(function(user, index) { %>
+        {
+            id: '<%= user.id %>',
+            name: '<%= user.name %>',
+            surname: '<%= user.surname %>',
+            email: '<%= user.email %>',
+            element: document.querySelector('[data-user-id="<%= user.id %>"]')
+        }<%= index < users.length - 1 ? ',' : '' %>
+        <% }) %>
+    ];
+    <% } %>
+
+    // ========================================
+    // SEARCH AND FILTERING SYSTEM
+    // ========================================
+    
+    /**
+     * Real-time search functionality
+     * Filters users as user types in search box
+     */
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterUsers(searchTerm);
+    });
+
+    /**
+     * Sort functionality
+     * Reorders users based on selected criteria
+     */
+    sortFilter.addEventListener('change', function() {
+        sortUsers(this.value);
+    });
+
+    // ========================================
+    // VIEW TOGGLE SYSTEM
+    // ========================================
+    
+    /**
+     * Switches to grid view mode
+     * Shows users in card layout
+     */
+    gridViewBtn.addEventListener('click', function() {
+        switchView('grid');
+    });
+
+    /**
+     * Switches to list view mode
+     * Shows users in compact list layout
+     */
+    listViewBtn.addEventListener('click', function() {
+        switchView('list');
+    });
+
+    // ========================================
+    // CORE FILTERING FUNCTION
+    // ========================================
+    
+    /**
+     * Filters users based on search term
+     * Searches across name, email, and ID fields
+     * Updates display count and shows/hides no results message
+     * 
+     * @param {string} searchTerm - The search query (converted to lowercase)
+     */
+    function filterUsers(searchTerm) {
+        const userCards = document.querySelectorAll('.user-card, .user-list-item');
+        let visibleCount = 0;
+
+        userCards.forEach(card => {
+            // Get searchable data from card's data attributes
+            const name = card.dataset.userName.toLowerCase();
+            const email = card.dataset.userEmail.toLowerCase();
+            const id = card.dataset.userId.toLowerCase();
+
+            // Check if any field contains the search term
+            const isVisible = name.includes(searchTerm) ||
+                email.includes(searchTerm) ||
+                id.includes(searchTerm);
+
+            // Show/hide card based on search results
+            if (isVisible) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Update the displayed count in the UI
+        displayedCount.textContent = visibleCount;
+
+        // Handle empty search results
+        if (visibleCount === 0 && searchTerm) {
+            showNoResults();
+        } else {
+            hideNoResults();
+        }
+    }
+
+    // ========================================
+    // SORTING FUNCTIONALITY
+    // ========================================
+    
+    /**
+     * Sorts users based on selected criteria
+     * Supports sorting by name, ID, email, and recent (newest first)
+     * 
+     * @param {string} sortBy - The sorting criteria
+     */
+    function sortUsers(sortBy) {
+        const container = currentView === 'grid' ? usersGrid : usersList;
+        const items = Array.from(container.children);
+
+        items.sort((a, b) => {
+            let aValue, bValue;
+
+            // Extract values based on sorting criteria
+            switch(sortBy) {
+                case 'name':
+                    // Sort alphabetically by full name
+                    aValue = a.dataset.userName.toLowerCase();
+                    bValue = b.dataset.userName.toLowerCase();
+                    break;
+                case 'id':
+                    // Sort numerically by user ID
+                    aValue = parseInt(a.dataset.userId);
+                    bValue = parseInt(b.dataset.userId);
+                    break;
+                case 'email':
+                    // Sort alphabetically by email
+                    aValue = a.dataset.userEmail.toLowerCase();
+                    bValue = b.dataset.userEmail.toLowerCase();
+                    break;
+                case 'recent':
+                    // Sort by ID in reverse order (newest first)
+                    aValue = parseInt(b.dataset.userId);
+                    bValue = parseInt(a.dataset.userId);
+                    break;
+                default:
+                    return 0;
+            }
+
+            // Standard comparison for sorting
+            if (aValue < bValue) return -1;
+            if (aValue > bValue) return 1;
+            return 0;
+        });
+
+        // Re-append sorted items to maintain order
+        items.forEach(item => container.appendChild(item));
+    }
+
+    // ========================================
+    // VIEW MODE SWITCHING
+    // ========================================
+    
+    /**
+     * Switches between grid and list view modes
+     * Updates UI state and button styling
+     * 
+     * @param {string} view - The view mode ('grid' or 'list')
+     */
+    function switchView(view) {
+        currentView = view;
+        if (view === 'grid') {
+            // Show grid view, hide list view
+            usersGrid.style.display = 'grid';
+            usersList.style.display = 'none';
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        } else {
+            // Show list view, hide grid view
+            usersGrid.style.display = 'none';
+            usersList.style.display = 'block';
+            usersList.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            listViewBtn.classList.add('active');
+        }
+    }
+
+    // ========================================
+    // EMPTY STATE MANAGEMENT
+    // ========================================
+    
+    /**
+     * Shows "no results" message when search yields no matches
+     * Creates and displays a user-friendly empty state
+     */
+    function showNoResults() {
+        if (!document.querySelector('.no-results')) {
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results empty-state';
+            noResults.innerHTML = `
+                <i class="fas fa-search"></i>
+                <h3>No users found</h3>
+                <p>Try adjusting your search terms</p>
+            `;
+            document.querySelector('.users-section').appendChild(noResults);
+        }
+    }
+
+    /**
+     * Hides the "no results" message when search yields results
+     * Removes the empty state element from DOM
+     */
+    function hideNoResults() {
+        const noResults = document.querySelector('.no-results');
+        if (noResults) {
+            noResults.remove();
+        }
+    }
+
+    // ========================================
+    // SCROLL ANIMATIONS
+    // ========================================
+    
+    // Configure intersection observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger 50px before element enters viewport
+    };
+
+    // Create observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Animate element into view
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Apply scroll animations to all user cards
+    document.querySelectorAll('.user-card, .user-list-item').forEach((el, index) => {
+        // Set initial hidden state
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        // Add staggered animation delay based on index
+        el.style.transition = `opacity 0.8s ease ${index * 0.05}s, transform 0.8s ease ${index * 0.05}s`;
+        observer.observe(el);
+    });
+
+    // ========================================
+    // INTERACTIVE CARD FUNCTIONALITY
+    // ========================================
+    
+    /**
+     * Makes user cards clickable to navigate to individual user profiles
+     * Prevents navigation when clicking on action buttons
+     */
+    document.querySelectorAll('.user-card, .user-list-item').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Don't navigate if clicking on action buttons (edit, delete, etc.)
+            if (e.target.closest('.user-actions, .user-list-actions, .btn, form, button')) {
+                return;
+            }
+            // Navigate to user profile page
+            const userId = this.dataset.userId;
+            if (userId) {
+                window.location.href = `/users/${userId}`;
+            }
+        });
+
+        // Add visual indicator that cards are clickable
+        card.style.cursor = 'pointer';
+    });
+
+    /**
+     * Prevents card click events when interacting with action buttons
+     * Ensures edit/delete buttons work without triggering navigation
+     */
+    document.querySelectorAll('.user-actions, .user-list-actions').forEach(actions => {
+        actions.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event bubbling to parent card
+        });
+    });
+
+    // ========================================
+    // USER EXPERIENCE ENHANCEMENTS
+    // ========================================
+    
+    // Auto-focus search input for immediate usability
+    searchInput.focus();
+
+    /**
+     * Adds keyboard shortcuts for better user experience
+     * Ctrl/Cmd + F: Focus search
+     * Escape: Clear search
+     */
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + F to focus search input
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select(); // Select existing text for easy replacement
+        }
+        // Escape key to clear search when search input is focused
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+            searchInput.value = '';
+            filterUsers(''); // Reset filter to show all users
+        }
+    });
+
+    // ========================================
+    // DELETE ACTION HANDLING
+    // ========================================
+    
+    /**
+     * Adds loading animation for delete actions
+     * Shows spinner and disables button during deletion process
+     */
+    document.querySelectorAll('.btn-danger').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                this.disabled = true; // Prevent double-clicking
+            }
+        });
+    });
+
+    // ========================================
+    // VISUAL EFFECTS
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half the scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>

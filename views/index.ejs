@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitChallenge - Transform Together</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Hero Section with Background */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.8) 0%,
+            rgba(118, 75, 162, 0.7) 50%,
+            rgba(102, 126, 234, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Challenge Cards */
+        .challenges {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .challenges::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(102, 126, 234, 0.1), transparent);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            color: white;
+            font-weight: 800;
+            position: relative;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .challenge-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .challenge-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .challenge-card h3 i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .challenge-card p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .challenge-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .challenge-features li {
+            padding: 0.5rem 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+
+        .challenge-features li:before {
+            content: "✓";
+            color: #2ed573;
+            font-weight: bold;
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            background: rgba(46, 213, 115, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .challenge-note {
+            color: #667eea;
+            font-style: italic;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+        }
+
+        /* Features Section */
+        .features {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 100px 0;
+            color: white;
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .features .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .features .section-title {
+            color: white;
+        }
+
+        .features .section-title::after {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 2rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .step h4 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Creators Section */
+        .creators {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .creators::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        .creators .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .creators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .creator-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .creator-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.15);
+        }
+
+        .creator-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            border: 4px solid #667eea;
+            object-fit: cover;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .creator-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .creator-role {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .creator-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .cta .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .challenge-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .creators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .cta h2 {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-content {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo" style="display: flex; align-items: center; gap: 1rem;">
+            <img src="/logo.png" alt="Server Side Eye Logo" style="height: 40px; width: 40px; object-fit: contain; margin-right: 0.5rem;" />
+            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/chat" class="btn btn-secondary">
+                <i class="fas fa-comments"></i> Chat
+            </a>
+            <a href="/login" class="btn btn-secondary">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="/register" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content fade-in-up">
+        <h1>Transform Together with 75Challenge</h1>
+        <p>Join the ultimate fitness challenge community. Connect with friends, track progress, and achieve your health goals together.</p>
+        <div class="hero-buttons">
+            <a href="/login" class="btn btn-primary">
+                <i class="fas fa-rocket"></i> Start Your Journey
+            </a>
+            <a href="#challenges" class="btn btn-secondary" style="color: rgba(255,255,255,0.9); border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Challenge Types -->
+<section class="challenges" id="challenges">
+    <div class="container">
+        <h2 class="section-title">Choose Your Challenge</h2>
+        <div class="challenge-grid">
+            <div class="challenge-card">
+                <h3><i class="fas fa-fire"></i> 75 Hard Challenge</h3>
+                <p>The ultimate mental toughness program that will transform your life in 75 days.</p>
+                <ul class="challenge-features">
+                    <li>Follow a diet with no cheat meals</li>
+                    <li>Two 45-minute workouts daily</li>
+                    <li>Drink 1 gallon of water</li>
+                    <li>Read 10 pages of non-fiction</li>
+                    <li>Take a progress photo</li>
+                </ul>
+                <p class="challenge-note"><i class="fas fa-info-circle"></i> Sign up to join this challenge</p>
+            </div>
+            <div class="challenge-card">
+                <h3><i class="fas fa-leaf"></i> 75 Soft Challenge</h3>
+                <p>A more flexible approach to building healthy habits and mental resilience.</p>
+                <ul class="challenge-features">
+                    <li>Eat well and drink plenty of water</li>
+                    <li>One 45-minute workout daily</li>
+                    <li>Read 10 pages of any book</li>
+                    <li>Practice gratitude</li>
+                    <li>One cheat meal per week allowed</li>
+                </ul>
+                <p class="challenge-note"><i class="fas fa-info-circle"></i> Sign up to join this challenge</p>
+            </div>
+            <div class="challenge-card">
+                <h3><i class="fas fa-cog"></i> Custom Challenge</h3>
+                <p>Create your own personalized challenge with custom goals and duration.</p>
+                <ul class="challenge-features">
+                    <li>Set your own rules</li>
+                    <li>Choose duration (30-365 days)</li>
+                    <li>Custom daily tasks</li>
+                    <li>Flexible requirements</li>
+                    <li>Track any metric</li>
+                </ul>
+                <p class="challenge-note"><i class="fas fa-info-circle"></i> Sign up to join this challenge</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Powerful Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                <h4>Team Collaboration</h4>
+                <p>Create challenge teams with friends and support each other throughout the journey.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-user-circle"></i></div>
+                <h4>Personal Profiles</h4>
+                <p>Create detailed profiles with progress photos and connect with like-minded individuals.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h4>Progress Tracking</h4>
+                <p>Monitor your progress and see how your friends are doing in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+                <h4>Badges & Trophies</h4>
+                <p>Earn achievements and unlock trophies for completing challenges and milestones.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                <h4>Community Chat</h4>
+                <p>Connect in community chat room channels for motivation and support.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-compass"></i></div>
+                <h4>Explore Page</h4>
+                <p>Discover new challenges, connect with users, and explore community content.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Sign Up</h4>
+                <p>Create your account and set up your own personal profile.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Be a part of a community</h4>
+                <p>Join or Create Communities to connect with friends and participate in challenges.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Connect with others</h4>
+                <p>Connect with friends in communities or join the general chat for mutual goals and support.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h4>Achieve your Goal</h4>
+                <p>Track progress, log daily activities, check off tasks, and monitor your journey to achieve your GOAL!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Creators Section -->
+<section class="creators">
+    <div class="container">
+        <h2 class="section-title">Meet the Creators</h2>
+        <p style="text-align: center; color: #666; font-size: 1.2rem; margin-bottom: 2rem; font-weight: 500;">
+            The passionate developers behind 75Challenge
+        </p>
+        <div class="creators-grid">
+            <div class="creator-card">
+                <img src="/aru_pic.jpeg" alt="Aruzhan Saduakaskyzy" class="creator-avatar">
+                <h4>Aruzhan Saduakaskyzy</h4>
+                <div class="creator-role">Backend developer</div>
+                <p>Full-stack developer focused on authentication and functionality. Unstoppable in any coding field, turns everything she touches into gold and makes progress happen.</p>
+            </div>
+            <div class="creator-card">
+                <img src="/jaja_pic.jpeg" alt="Hajar Rhachi" class="creator-avatar">
+                <h4>Hajar Rhachi</h4>
+                <div class="creator-role">Team Lead</div>
+                <p>Full-stack web developer and team lead, code wizard with top tier error handling skills. Amazing at what she does and lifting all team members spirits.</p>
+            </div>
+            <div class="creator-card">
+                <img src="/angi_pic.jpeg" alt="Angelina Hess" class="creator-avatar">
+                <h4>Angelina Hess</h4>
+                <div class="creator-role">UI/UX Designer</div>
+                <p>Full-stack developer passionate about fitness and technology and a creative designer focused on user experience and interface design. Idea GOD.</p>
+            </div>
+            <div class="creator-card">
+                <img src="/didi_pic.jpeg" alt="Diana Ivanova" class="creator-avatar">
+                <h4>Diana Ivanova</h4>
+                <div class="creator-role">Backend developer</div>
+                <p>Full-stack engineer working on functionality and connectivity. Can add any element needed with the highest of quality, enthusiastic about design and perfection.</p>
+            </div>
+            <div class="creator-card">
+                <img src="/julpod_pic.jpeg" alt="Julian Pecho" class="creator-avatar">
+                <h4>Julian Pecho</h4>
+                <div class="creator-role">Database engineer</div>
+                <p>Expert in database architecture and error handling, Volleyball enthusiast with drive beyond human capabilities. An absolute unit on the coding field.</p>
+            </div>
+            <div class="creator-card">
+                <img src="/Monmon_pic.jpeg" alt="Monika Goraczko" class="creator-avatar">
+                <h4>Monika Goraczko</h4>
+                <div class="creator-role">Designer</div>
+                <p>Badge enthusiast, with the right motivations is good at what she does. One million skill designer.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Transform Your Life?</h2>
+        <p>Join thousands of others who are already on their journey to better health and mental toughness.</p>
+        <div class="hero-buttons">
+            <a href="/register" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Sign Up Free
+            </a>
+            <a href="/login" class="btn btn-secondary" style="color: rgba(255,255,255,0.9); border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <p>&copy; 2024 FitChallenge. Transform together, achieve together.</p>
+    </div>
+</footer>
+
+<script>
+    // ========================================
+    // LANDING PAGE INTERACTIONS AND ANIMATIONS
+    // ========================================
+    
+    // ========================================
+    // SMOOTH SCROLLING NAVIGATION
+    // ========================================
+    
+    /**
+     * Enables smooth scrolling for internal anchor links
+     * Provides smooth navigation between page sections
+     */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            // Smoothly scroll to the target section
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // ========================================
+    // SCROLL-TRIGGERED ANIMATIONS
+    // ========================================
+    
+    /**
+     * Configuration for Intersection Observer
+     * Triggers animations when elements come into view
+     */
+    const observerOptions = {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger 50px before element enters viewport
+    };
+
+    /**
+     * Intersection Observer for scroll-triggered animations
+     * Animates various page elements as they come into view
+     */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Animate element into view with fade and slide effect
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    /**
+     * Initialize all animated elements with scroll-triggered animations
+     * Sets up challenge cards, feature cards, steps, and creator cards
+     */
+    document.querySelectorAll('.challenge-card, .feature-card, .step, .creator-card').forEach(el => {
+        // Set initial hidden state
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        
+        // Add smooth transition for animation
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        
+        // Start observing this element for scroll animations
+        observer.observe(el);
+    });
+
+    // ========================================
+    // PARALLAX HERO BACKGROUND EFFECT
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for hero section background
+     * Moves hero background at half scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
+    });
+</script>
+</body>
+</html>

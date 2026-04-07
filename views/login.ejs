@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FitChallenge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background with overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.9) 0%,
+            rgba(118, 75, 162, 0.8) 50%,
+            rgba(102, 126, 234, 0.9) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3.5rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2.2rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #333 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #333;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.2rem 1.2rem 1.2rem 3.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.3rem 2.5rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .form-footer p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .register-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .register-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.1) 0%, rgba(255, 71, 87, 0.05) 100%);
+            color: #ff4757;
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 71, 87, 0.2);
+            text-align: center;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(46, 213, 115, 0.1) 0%, rgba(46, 213, 115, 0.05) 100%);
+            color: #2ed573;
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(46, 213, 115, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading state */
+        .submit-btn.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Password visibility toggle */
+        .password-toggle {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #764ba2;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .login-container {
+                margin: 1rem;
+                padding: 2.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 2rem;
+            }
+
+            .login-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .login-container {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .login-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="container">
+        <div class="logo">
+            <img src="/logo.png" alt="FitChallenge Logo">
+            <span>
+                <i class="fas fa-dumbbell"></i>
+                75Challenge
+            </span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Homepage</a></li>
+            <li><a href="/register"><i class="fas fa-user-plus"></i> Register</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="login-container">
+        <!-- Login Header -->
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h1>Welcome Back!</h1>
+            <p>Sign in to continue your fitness journey</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <%= error %>
+            </div>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <span><%= success %></span>
+            </div>
+        <% } %>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form" action="/login" method="post">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-envelope"></i>
+                    Email Address
+                </label>
+                <input
+                        type="email"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your email address"
+                        required
+                        autocomplete="email"
+                        value="<%= typeof formData !== 'undefined' ? formData.username || '' : '' %>"
+                />
+                <i class="fas fa-envelope"></i>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i>
+                    Password
+                </label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                />
+                <i class="fas fa-lock"></i>
+                <button type="button" class="password-toggle" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                </button>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+            </button>
+        </form>
+
+        <!-- Form Footer -->
+        <div class="form-footer">
+            <p>Don't have an account yet?</p>
+            <a href="/register" class="register-link">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+            </a>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ========================================
+    // USER LOGIN WITH ENHANCED UX
+    // ========================================
+    
+    // ========================================
+    // PASSWORD VISIBILITY TOGGLE
+    // ========================================
+    
+    /**
+     * Toggles password field visibility between hidden and visible
+     * Changes icon to indicate current state (eye/eye-slash)
+     */
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('passwordToggleIcon');
+
+        if (passwordInput.type === 'password') {
+            // Show password
+            passwordInput.type = 'text';
+            toggleIcon.className = 'fas fa-eye-slash';
+        } else {
+            // Hide password
+            passwordInput.type = 'password';
+            toggleIcon.className = 'fas fa-eye';
+        }
+    }
+
+    // ========================================
+    // FORM SUBMISSION HANDLING
+    // ========================================
+    
+    /**
+     * Handles login form submission with loading state
+     * Shows spinner and disables button to prevent double submission
+     */
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Add loading state to submit button
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Signing In...';
+        submitBtn.disabled = true;
+
+        // Form will submit normally to server for authentication
+    });
+
+    // ========================================
+    // USER EXPERIENCE ENHANCEMENTS
+    // ========================================
+    
+    /**
+     * Adds subtle animations to form inputs on focus/blur
+     * Provides visual feedback for user interaction
+     */
+    document.querySelectorAll('.form-group input').forEach(input => {
+        input.addEventListener('focus', () => {
+            input.parentElement.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', () => {
+            input.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Auto-focus first input field if no error message is present
+    <% if (typeof error === 'undefined' || !error) { %>
+    document.getElementById('username').focus();
+    <% } %>
+
+    // ========================================
+    // MESSAGE AUTO-HIDE SYSTEM
+    // ========================================
+    
+    /**
+     * Automatically hides success and error messages after 5 seconds
+     * Provides smooth fade-out animation for better UX
+     */
+    setTimeout(() => {
+        const errorMsg = document.querySelector('.error-message');
+        const successMsg = document.querySelector('.success-message');
+
+        // Fade out and remove error message if present
+        if (errorMsg) {
+            errorMsg.style.opacity = '0';
+            errorMsg.style.transform = 'translateY(-20px)';
+            setTimeout(() => errorMsg.remove(), 300);
+        }
+
+        // Fade out and remove success message if present
+        if (successMsg) {
+            successMsg.style.opacity = '0';
+            successMsg.style.transform = 'translateY(-20px)';
+            setTimeout(() => successMsg.remove(), 300);
+        }
+    }, 5000);
+
+    // ========================================
+    // PARALLAX BACKGROUND EFFECT
+    // ========================================
+    
+    /**
+     * Creates parallax scrolling effect for background
+     * Moves background at half scroll speed for depth effect
+     */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.body.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    });
+</script>
+</body>
+</html>
