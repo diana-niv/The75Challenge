@@ -39,13 +39,6 @@ After registering/logging in, you can:
 - View other users' public profiles
 
 ---
-
-## 🔑 Credentials
-
-### Database
-- `DB_USERNAME`: `ds231009`
-- `DB_PASSWORD`: `Rauch1919:)`
-
 ### Test Users
 
 | Role   | Email                 | Password |
